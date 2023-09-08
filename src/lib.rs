@@ -1,10 +1,20 @@
 use wasm_bindgen::prelude::*;
-use web_sys::HtmlCanvasElement;
 
-mod func_plot;
+use plotters::prelude::*;
+use plotters_canvas::CanvasBackend;
 
-/// Type alias for the result of a drawing function.
 #[wasm_bindgen]
-pub fn myDraw() {
-    func_plot::draw("canvas", 1);
+pub fn draw() {
+    let canvas_backend = CanvasBackend::new("canvas").expect("cannot find canvas");
+    let root_drawing_area = canvas_backend.into_drawing_area();
+
+    root_drawing_area.fill(&WHITE).unwrap();
+    
+    let mut chart = ChartBuilder::on(&root_drawing_area)
+        .build_cartesian_2d(0..100, 0..100)
+        .unwrap();
+
+    chart.draw_series(
+        LineSeries::new((0..100).map(|x| (x, 100 - x)), &BLACK),
+    ).unwrap();
 }
